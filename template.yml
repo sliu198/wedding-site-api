@@ -32,15 +32,37 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   # This is a Lambda function config associated with the source code: hello-from-lambda.js
-  helloFromLambdaFunction:
-    Type: AWS::Serverless::Function
+#  helloFromLambdaFunction:
+#    Type: AWS::Serverless::Function
+#    Properties:
+#      CodeUri: ./
+#      Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
+#      Runtime: nodejs18.x
+#      MemorySize: 128
+#      Timeout: 60
+#      Description: A Lambda function that returns a static string.
+#      Policies:
+#        # Give Lambda basic execution Permission to the helloFromLambda
+#        - AWSLambdaBasicExecutionRole
+  credentialTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      CodeUri: ./
-      Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
-      Runtime: nodejs18.x
-      MemorySize: 128
-      Timeout: 60
-      Description: A Lambda function that returns a static string.
-      Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
-        - AWSLambdaBasicExecutionRole
+      TableName: 'Credential'
+      AttributeDefinitions:
+        - AttributeName: email
+          AttributeType: S
+      KeySchema:
+        - AttributeName: email
+          KeyType: HASH
+      ProvisionedThroughput: ''
+      SSESpecification: ''
+      BillingMode: PAY_PER_REQUEST
+#  authEmailTemplate:
+#    Type: AWS::SES::Template
+#    Properties:
+#      Template:
+#        TemplateName: helenandsolomon2024-login-link
+#        SubjectPart: Login link for www.helenandsolomon2024.com
+#        HtmlPart: |
+#
+#        TextPart: String
