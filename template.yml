@@ -31,25 +31,31 @@ Resources:
   # Each Lambda function is defined by properties:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
-  # This is a Lambda function config associated with the source code: hello-from-lambda.js
-#  helloFromLambdaFunction:
-#    Type: AWS::Serverless::Function
-#    Properties:
-#      CodeUri: ./
-#      Handler: src/handlers/hello-from-lambda.helloFromLambdaHandler
-#      Runtime: nodejs18.x
-#      MemorySize: 128
-#      Timeout: 60
-#      Description: A Lambda function that returns a static string.
-#      Policies:
-#        # Give Lambda basic execution Permission to the helloFromLambda
-#        - AWSLambdaBasicExecutionRole
+  api:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: wedding-site-api
+      ProtocolType: HTTP
+      Target: !GetAtt apiLambda.Arn
+  apiLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: src/handlers/api-lambda.indexHandler
+      Runtime: nodejs18.x
+      MemorySize: 128
+      Timeout: 60
+      Policies:
+        # Give Lambda basic execution Permission to the helloFromLambda
+        - AWSLambdaBasicExecutionRole
   credentialTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: 'Credential'
+      TableName: 'Subscriptions'
       AttributeDefinitions:
         - AttributeName: email
+          AttributeType: S
+        - AttributeName: name
           AttributeType: S
       KeySchema:
         - AttributeName: email
