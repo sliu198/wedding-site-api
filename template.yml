@@ -55,8 +55,6 @@ Resources:
       AttributeDefinitions:
         - AttributeName: email
           AttributeType: S
-        - AttributeName: name
-          AttributeType: S
       KeySchema:
         - AttributeName: email
           KeyType: HASH
