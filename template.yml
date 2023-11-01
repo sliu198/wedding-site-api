@@ -58,7 +58,7 @@ Resources:
   subscriptionsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: 'Subscriptions2'
+      TableName: 'Subscriptions'
       AttributeDefinitions:
         - AttributeName: email
           AttributeType: S
