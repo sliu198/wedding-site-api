@@ -15,10 +15,14 @@ async function handler(request) {
 
     const {body} = request;
 
-    const {
-      name,
-      email
-    } = await POST_SUBSCRIBE_SCHEMA.validate(body);
+    try {
+      const {
+        name,
+        email
+      } = await POST_SUBSCRIBE_SCHEMA.validate(body);
+    } catch (error) {
+      throw makeBadRequestError(error.message);
+    }
 
     return makeJsonResponse({
       message: `Hello ${name}, thank you for submitting your email ${email}.`
