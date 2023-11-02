@@ -60,7 +60,7 @@ Resources:
             ApiId: api
             Method: POST
             Path: /subscribe
-  subscriptionsTable2:
+  subscriptionsTable:
     Type: AWS::Serverless::Table
     Properties:
       PrimaryKey:
