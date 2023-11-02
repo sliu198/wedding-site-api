@@ -3,20 +3,26 @@ const lambda = require('../../../src/handlers/api-lambda.js');
 
 describe('api-lambda', function() {
   describe('index', function() {
-    it('returns 404 for bad path', async function() {
-      const response = await lambda.indexHandler({
-        httpMethod: 'POST',
-        path: '',
-        queryStringParameters: {},
-        headers: {},
-        body: ''
-      });
+    it('returns 404 for empty path', async function() {
+      const response = await lambda.indexHandler({});
 
       confirmJsonResponse(
         response,
         { message: 'Not Found'},
         {expectedStatusCode: 404}
         )
+    });
+
+    it('returns 404 for bad path', async function() {
+      const response = await lambda.indexHandler({
+        path: 'foo'
+      });
+
+      confirmJsonResponse(
+        response,
+        { message: 'Not Found'},
+        {expectedStatusCode: 404}
+      )
     });
   });
 
@@ -25,7 +31,6 @@ describe('api-lambda', function() {
       const response = await lambda.indexHandler({
         httpMethod: 'POST',
         path: '/subscribe',
-        queryStringParameters: {},
         headers: {
           'content-type': 'application/json'
         },

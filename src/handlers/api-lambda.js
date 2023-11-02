@@ -10,7 +10,7 @@ const POST_SUBSCRIBE_SCHEMA = yup.object({
 }).noUnknown().typeError('request body must be a JSON object');
 
 async function indexHandler(request){
-  const {path} = request
+  const {path = ''} = request
   const pathParts = path.split('/');
   pathParts.shift(); // the first part will always be empty
   const part = pathParts.shift() || '';
@@ -27,7 +27,7 @@ async function indexHandler(request){
 }
 
 async function subscribeHandler(request, {pathParts}) {
-  const {httpMethod} = request;
+  const {httpMethod = ''} = request;
   const pathPart = pathParts.shift();
 
   if (pathPart || pathParts.length) throw makeNotFoundError();
@@ -52,7 +52,7 @@ function parseJson(request) {
   const {
     headers: {
       'content-type': contentType
-    }
+    } = {}
   } = request;
 
   if (contentType !== 'application/json') {
@@ -60,7 +60,7 @@ function parseJson(request) {
   }
 
   try {
-    request.body = JSON.parse(request.body);
+    request.body = JSON.parse(request.body || '');
   } catch (error) {
     throw makeBadRequestError(`Invalid JSON: ${error.message}`);
   }
