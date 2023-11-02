@@ -4,7 +4,6 @@ const lambda = require('../../../src/handlers/subscribe-lambda.js');
 describe('subscribe-lambda', function() {
   it('confirm successful request', async function() {
     const response = await lambda.handler({
-      pathParameters: {},
       headers: {
         'content-type': 'application/json'
       },

@@ -10,22 +10,25 @@ const POST_SUBSCRIBE_SCHEMA = yup.object({
 }).noUnknown().typeError('request body must be a JSON object');
 
 async function handler(request) {
-  const {pathParameters: {proxy = ''}} = request;
+  try {
+    parseJson(request);
 
-  if (proxy) throw makeNotFoundError();
+    const {body} = request;
 
-  parseJson(request);
+    const {
+      name,
+      email
+    } = await POST_SUBSCRIBE_SCHEMA.validate(body);
 
-  const {body} = request;
+    return makeJsonResponse({
+      message: `Hello ${name}, thank you for submitting your email ${email}.`
+    });
+  } catch (error) {
+    const {statusCode} = error;
+    if (statusCode >= 400 && statusCode < 500) return makeErrorResponse(error)
 
-  const {
-    name,
-    email
-  } = await POST_SUBSCRIBE_SCHEMA.validate(body);
-
-  return makeJsonResponse({
-    message: `Hello ${name}, thank you for submitting your email ${email}.`
-  });
+    throw error;
+  }
 }
 
 function parseJson(request) {
