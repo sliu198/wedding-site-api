@@ -35,9 +35,10 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Connectors:
       subscribeConnector:
-        Destination: !Ref subscribeFunction
-        Permissions:
-          - Write
+        Properties:
+          Destination: !Ref subscribeFunction
+          Permissions:
+            - Write
   subscribeFunction:
     Type: AWS::Serverless::Function
     Properties:
