@@ -36,7 +36,10 @@ Resources:
     Connectors:
       subscribeConnector:
         Properties:
-          Destination: !Ref subscribeFunction
+          SourceReference:
+            Qualifier: $default/POST/subscribe
+          Destination:
+            Id: !Ref subscribeFunction
           Permissions:
             - Write
   subscribeFunction:
