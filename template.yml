@@ -61,7 +61,7 @@ Resources:
             Method: POST
             Path: /subscribe
   subscriptionsTable2:
-    Type: AWS::Serverless::Table
+    Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
         Name: email
