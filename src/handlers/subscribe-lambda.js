@@ -1,80 +1,80 @@
-const yup = require('yup');
+const yup = require("yup");
 
 module.exports = {
   handler,
-}
+};
 
-const POST_SUBSCRIBE_SCHEMA = yup.object({
-  name: yup.string().required(),
-  email: yup.string().required().email()
-}).noUnknown().typeError('request body must be a JSON object');
+const POST_SUBSCRIBE_SCHEMA = yup
+  .object({
+    email: yup.string().required().email(),
+    name: yup.string().required(),
+  })
+  .noUnknown();
 
 async function handler(request) {
   try {
     parseJson(request);
 
-    const {body} = request;
+    const { body } = request;
 
-    try {
-      const {
-        name,
-        email
-      } = await POST_SUBSCRIBE_SCHEMA.validate(body);
-    } catch (error) {
-      throw makeBadRequestError(error.message);
-    }
+    const { name, email } = await validate(body);
 
     return makeJsonResponse({
-      message: `Hello ${name}, thank you for submitting your email ${email}.`
+      message: `Hello ${name}, thank you for submitting your email ${email}.`,
     });
   } catch (error) {
-    const {statusCode} = error;
-    if (statusCode >= 400 && statusCode < 500) return makeErrorResponse(error)
+    const { statusCode } = error;
+    if (statusCode >= 400 && statusCode < 500) return makeErrorResponse(error);
 
     throw error;
   }
 }
 
 function parseJson(request) {
-  const {
-    headers: {
-      'content-type': contentType
-    } = {}
-  } = request;
+  const { headers: { "content-type": contentType } = {} } = request;
 
-  if (contentType !== 'application/json') {
+  if (contentType !== "application/json") {
     throw makeUnsupportedMediaTypeError();
   }
 
   try {
-    request.body = JSON.parse(request.body || '');
+    request.body = JSON.parse(request.body || "");
   } catch (error) {
     throw makeBadRequestError(`Invalid JSON: ${error.message}`);
   }
 }
 
-function makeJsonResponse(body, {statusCode = 200, headers} = {}) {
+async function validate(input) {
+  try {
+    return await POST_SUBSCRIBE_SCHEMA.validate(input, { abortEarly: false });
+  } catch (error) {
+    let { message } = error;
+    if (error.errors.length > 1) {
+      message += `: ${error.errors.join("; ")}`;
+    }
+    throw makeBadRequestError(message);
+  }
+}
+
+function makeJsonResponse(body, { statusCode = 200, headers } = {}) {
   return {
     statusCode,
     headers: {
       ...headers,
-      'content-type': 'application/json',
+      "content-type": "application/json",
     },
-    body: JSON.stringify(body)
-  }
+    body: JSON.stringify(body),
+  };
 }
 
 function makeErrorResponse(error) {
-  let {
-    statusCode = 500,
-    message,
-  } = error;
+  let { statusCode = 500, message } = error;
 
   if (error.statusCode >= 500) {
-    message = 'Internal Server Error';
+    message = "Internal Server Error";
   }
 
-  return makeJsonResponse({message}, {statusCode});
+  return makeJsonResponse({ message }, { statusCode });
 }
 
 function makeError(message, statusCode) {
@@ -83,19 +83,10 @@ function makeError(message, statusCode) {
   return error;
 }
 
-function makeBadRequestError(message = 'Bad Request') {
+function makeBadRequestError(message = "Bad Request") {
   return makeError(message, 400);
 }
 
-function makeNotFoundError() {
-  return makeError('Not Found', 404);
-}
-
-function makeMethodNotAllowedError() {
-  return makeError('Method Not Allowed', 405);
-}
-
 function makeUnsupportedMediaTypeError() {
-  return makeError('Unsupported Media Type', 415);
+  return makeError("Unsupported Media Type", 415);
 }
-

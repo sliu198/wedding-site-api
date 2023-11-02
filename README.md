@@ -5,9 +5,9 @@ This project contains source code and supporting files for the serverless applic
 This project includes the following files and folders:
 
 - src - Code for the application's Lambda function.
-- \_\_tests__ - Unit tests for the application code.
+- \_\_tests\_\_ - Unit tests for the application code.
 - template.yml - A SAM template that defines the application's AWS resources.
-- buildspec.yml -  A build specification file that tells AWS CodeBuild how to create a deployment package for the function.
+- buildspec.yml - A build specification file that tells AWS CodeBuild how to create a deployment package for the function.
 
 Your Lambda application includes two AWS CloudFormation stacks. The first stack creates the pipeline that builds and deploys your application.
 
@@ -101,16 +101,16 @@ The AWS Toolkit is an open-source plugin for popular IDEs that uses the AWS SAM 
 
 To get started, see the following:
 
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
+- [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
+- [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
+- [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
 
 To use the AWS SAM CLI with this sample, you need the following tools:
 
-* AWS CLI - [Install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure it with your AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
-* AWS SAM CLI - [Install the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html).
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community).
+- AWS CLI - [Install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure it with your AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
+- AWS SAM CLI - [Install the AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html).
+- Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community).
 
 Build your application with the `sam build` command.
 
@@ -130,9 +130,9 @@ my-application$ sam local invoke helloFromLambdaFunction --no-event
 
 Requirements:
 
-* Node.js - [Install Node.js 18.x](https://nodejs.org/en/), including the npm package management tool.
+- Node.js - [Install Node.js 18.x](https://nodejs.org/en/), including the npm package management tool.
 
-Tests are defined in the \_\_tests__ folder in this project. Use `npm` to install the [Jest test framework](https://jestjs.io/) and run unit tests.
+Tests are defined in the \_\_tests\_\_ folder in this project. Use `npm` to install the [Jest test framework](https://jestjs.io/) and run unit tests.
 
 ```bash
 my-application$ npm install
