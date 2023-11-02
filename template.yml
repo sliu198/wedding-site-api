@@ -39,7 +39,7 @@ Resources:
           SourceReference:
             Qualifier: $default/POST/subscribe
           Destination:
-            Id: !Ref subscribeFunction
+            Id: subscribeFunction
           Permissions:
             - Write
   subscribeFunction:
@@ -57,7 +57,7 @@ Resources:
         httpApiEvent:
           Type: HttpApi
           Properties:
-            ApiId: !Ref api
+            ApiId: api
             Method: POST
             Path: /subscribe
   subscriptionsTable:
