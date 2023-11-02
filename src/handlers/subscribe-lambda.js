@@ -1,7 +1,7 @@
 const yup = require('yup');
 
 module.exports = {
-  indexHandler,
+  handler,
 }
 
 const POST_SUBSCRIBE_SCHEMA = yup.object({
@@ -9,30 +9,10 @@ const POST_SUBSCRIBE_SCHEMA = yup.object({
   email: yup.string().required().email()
 }).noUnknown().typeError('request body must be a JSON object');
 
-async function indexHandler(request){
-  const {requestContext: {http: {path}}} = request
-  const pathParts = path.split('/');
-  pathParts.shift(); // the first part will always be empty
-  const part = pathParts.shift() || '';
+async function handler(request) {
+  const {pathParameters: {proxy = ''}} = request;
 
-  try {
-    if (part === 'subscribe') {
-      return await subscribeHandler(request, {pathParts})
-    } else {
-      throw makeNotFoundError();
-    }
-  } catch (error) {
-    return makeErrorResponse(error);
-  }
-}
-
-async function subscribeHandler(request, {pathParts}) {
-  const {requestContext: {http: {method}}} = request;
-  const pathPart = pathParts.shift();
-
-  if (pathPart || pathParts.length) throw makeNotFoundError();
-
-  if (method !== 'POST') throw makeMethodNotAllowedError();
+  if (proxy) throw makeNotFoundError();
 
   parseJson(request);
 

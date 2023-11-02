@@ -32,42 +32,38 @@ Resources:
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
 
   api:
-    Type: AWS::ApiGatewayV2::Api
-    Properties:
-      Name: wedding-site-api
-      ProtocolType: HTTP
-      Target: !GetAtt apiLambda.Arn
-  apiLambda:
+    Type: AWS::Serverless::HttpApi
+    Connectors:
+      subscribeConnector:
+        Destination: !Ref subscribeFunction
+        Permissions:
+          - Write
+  subscribeFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ./
-      Handler: src/handlers/api-lambda.indexHandler
+      Handler: src/handlers/subscribe-lambda.handler
       Runtime: nodejs18.x
       MemorySize: 128
       Timeout: 60
       Policies:
         # Give Lambda basic execution Permission to the helloFromLambda
         - AWSLambdaBasicExecutionRole
-  apiLambdaPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !Ref apiLambda
-      Principal: apigateway.amazonaws.com
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${api}/*/$default
+      Events:
+        httpApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref api
+            Method: POST
+            Path: /subscribe
   subscriptionsTable:
-    Type: AWS::DynamoDB::Table
+    Type: AWS::Serverless::Table
     Properties:
-      TableName: 'Subscriptions'
-      AttributeDefinitions:
-        - AttributeName: email
-          AttributeType: S
-      KeySchema:
-        - AttributeName: email
-          KeyType: HASH
+      PrimaryKey:
+        Name: email
+        Type: String
       SSESpecification:
         SSEEnabled: true
-      BillingMode: PAY_PER_REQUEST
 #  authEmailTemplate:
 #    Type: AWS::SES::Template
 #    Properties:
