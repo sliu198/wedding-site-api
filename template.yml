@@ -50,9 +50,6 @@ Resources:
       Runtime: nodejs18.x
       MemorySize: 128
       Timeout: 60
-      Policies:
-        # Give Lambda basic execution Permission to the helloFromLambda
-        - AWSLambdaBasicExecutionRole
       Events:
         httpApiEvent:
           Type: HttpApi

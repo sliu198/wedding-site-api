@@ -68,11 +68,7 @@ function makeJsonResponse(body, { statusCode = 200, headers } = {}) {
 }
 
 function makeErrorResponse(error) {
-  let { statusCode = 500, message } = error;
-
-  if (error.statusCode >= 500) {
-    message = "Internal Server Error";
-  }
+  let { statusCode, message } = error;
 
   return makeJsonResponse({ message }, { statusCode });
 }
