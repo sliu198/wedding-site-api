@@ -45,7 +45,7 @@ Resources:
           HostedZoneName: !Sub '${DomainName}.'
       DisableExecuteApiEndpoint: true
     Connectors:
-      subscribeConnector:
+      subscribeFunctionConnector:
         Properties:
           SourceReference:
             Qualifier: $default/POST/subscribe
@@ -69,6 +69,14 @@ Resources:
             ApiId: api
             Method: POST
             Path: /subscribe
+    Connectors:
+      subscriptionsTableConnector:
+        Properties:
+          Destination:
+            Id: subscriptionsTable
+          Permissions:
+            - Read
+            - Write
   subscriptionsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
