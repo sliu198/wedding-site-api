@@ -24,7 +24,7 @@ Globals:
 Parameters:
   AppId:
     Type: String
-  ApiDomainName:
+  DomainName:
     Type: String
   CertificateArn:
     Type: String
@@ -40,9 +40,9 @@ Resources:
     Properties:
       Domain:
         CertificateArn: !Ref CertificateArn
-        DomainName: !Ref ApiDomainName
+        DomainName: !Sub 'api.${DomainName}'
         Route53:
-          HostedZoneName: !Sub '${ApiDomainName}.'
+          HostedZoneName: !Sub '${DomainName}.'
       DisableExecuteApiEndpoint: true
     Connectors:
       subscribeConnector:
