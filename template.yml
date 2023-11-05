@@ -48,8 +48,9 @@ Resources:
       CodeUri: ./
       Handler: src/handlers/subscribe-lambda.handler
       Runtime: nodejs18.x
-      MemorySize: 128
-      Timeout: 60
+      Environment:
+        Variables:
+          SUBSCRIPTIONS_TABLE_NAME: !Ref subscriptionsTable
       Events:
         httpApiEvent:
           Type: HttpApi
@@ -65,12 +66,3 @@ Resources:
         Type: String
       SSESpecification:
         SSEEnabled: true
-#  authEmailTemplate:
-#    Type: AWS::SES::Template
-#    Properties:
-#      Template:
-#        TemplateName: helenandsolomon2024-login-link
-#        SubjectPart: Login link for www.helenandsolomon2024.com
-#        HtmlPart: |
-#
-#        TextPart: String

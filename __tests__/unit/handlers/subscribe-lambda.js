@@ -1,19 +1,67 @@
+const { getSubscription } = require("../../../src/aws/dynamo-db.js");
 const lambda = require("../../../src/handlers/subscribe-lambda.js");
+
+const randomString = require("../../util/randomString.js");
 
 describe("subscribe-lambda", function () {
   it("confirm successful request", async function () {
-    const response = await lambda.handler(makeValidSubscribe());
+    const body = makeValidBody();
+    const response = await lambda.handler(makeSubscribeRequest(body));
 
-    confirmJsonResponse(
-      response,
-      expect.objectContaining({
-        message: expect.stringMatching(/Hello.*abc.*def@ghi/),
-      }),
-    );
+    confirmJsonResponse(response, body);
+    const saved = await getSubscription(body.email);
+    expect(saved).toEqual(body);
+  });
+
+  it("should canonicalize email and name", async function () {
+    const local = randomString();
+    const nonCanonicalEmail = ` ${local}@eXamPLE.com`;
+    const canonicalEmail = `${local}@example.com`;
+
+    const first = randomString();
+    const middle = randomString();
+    const last = randomString();
+
+    const nonCanonicalName = ` ${first}\n${middle}\r\t${last}`;
+    const canonicalName = [first, middle, last].join(" ");
+
+    {
+      // expect canonical values to be stored and returned
+      const response = await lambda.handler(
+        makeSubscribeRequest({
+          email: nonCanonicalEmail,
+          name: nonCanonicalName,
+        }),
+      );
+
+      const canonicalSub = {
+        email: canonicalEmail,
+        name: canonicalName,
+      };
+      confirmJsonResponse(response, canonicalSub);
+      expect(await getSubscription(nonCanonicalEmail)).toEqual(canonicalSub);
+      expect(await getSubscription(canonicalEmail)).toEqual(canonicalSub);
+    }
+
+    {
+      // expect case-insensitive email matching to update
+      const lowerEmail = canonicalEmail.toLowerCase();
+      const newName = randomString();
+      const body = {
+        email: lowerEmail,
+        name: newName,
+      };
+      const response = await lambda.handler(makeSubscribeRequest(body));
+      confirmJsonResponse(response, body);
+      expect(await getSubscription(nonCanonicalEmail)).toEqual(body);
+      expect(await getSubscription(canonicalEmail)).toEqual(body);
+      expect(await getSubscription(lowerEmail)).toEqual(body);
+    }
   });
 
   it("missing content type should result in 415", async function () {
-    const request = makeValidSubscribe();
+    const body = makeValidBody();
+    const request = makeSubscribeRequest(body);
     delete request.headers["content-type"];
 
     const response = await lambda.handler(request);
@@ -30,7 +78,8 @@ describe("subscribe-lambda", function () {
   });
 
   it("wrong content type should result in 415", async function () {
-    const request = makeValidSubscribe();
+    const body = makeValidBody();
+    const request = makeSubscribeRequest(body);
     request.headers["content-type"] = "foobar";
 
     const response = await lambda.handler(request);
@@ -47,7 +96,7 @@ describe("subscribe-lambda", function () {
   });
 
   it("unparseable body should error", async function () {
-    const request = makeValidSubscribe();
+    const request = makeSubscribeRequest(null);
     request.body = "";
 
     const response = await lambda.handler(request);
@@ -64,8 +113,7 @@ describe("subscribe-lambda", function () {
   });
 
   it("non-object should error", async function () {
-    const request = makeValidSubscribe();
-    request.body = "[]";
+    const request = makeSubscribeRequest([]);
 
     const response = await lambda.handler(request);
 
@@ -81,10 +129,9 @@ describe("subscribe-lambda", function () {
   });
 
   it("missing email should error", async function () {
-    const request = makeValidSubscribe();
-    const parsedBody = JSON.parse(request.body);
-    delete parsedBody.email;
-    request.body = JSON.stringify(parsedBody);
+    const body = makeValidBody();
+    delete body.email;
+    const request = makeSubscribeRequest(body);
 
     const response = await lambda.handler(request);
 
@@ -100,10 +147,9 @@ describe("subscribe-lambda", function () {
   });
 
   it("invalid email should error", async function () {
-    const request = makeValidSubscribe();
-    const parsedBody = JSON.parse(request.body);
-    parsedBody.email = "abc";
-    request.body = JSON.stringify(parsedBody);
+    const body = makeValidBody();
+    body.email = randomString();
+    const request = makeSubscribeRequest(body);
 
     const response = await lambda.handler(request);
 
@@ -119,10 +165,9 @@ describe("subscribe-lambda", function () {
   });
 
   it("wrong email type should error", async function () {
-    const request = makeValidSubscribe();
-    const parsedBody = JSON.parse(request.body);
-    parsedBody.email = [];
-    request.body = JSON.stringify(parsedBody);
+    const body = makeValidBody();
+    body.email = [];
+    const request = makeSubscribeRequest(body);
 
     const response = await lambda.handler(request);
 
@@ -138,10 +183,9 @@ describe("subscribe-lambda", function () {
   });
 
   it("missing name should error", async function () {
-    const request = makeValidSubscribe();
-    const parsedBody = JSON.parse(request.body);
-    delete parsedBody.name;
-    request.body = JSON.stringify(parsedBody);
+    const body = makeValidBody();
+    delete body.name;
+    const request = makeSubscribeRequest(body);
 
     const response = await lambda.handler(request);
 
@@ -157,10 +201,9 @@ describe("subscribe-lambda", function () {
   });
 
   it("wrong name type should error", async function () {
-    const request = makeValidSubscribe();
-    const parsedBody = JSON.parse(request.body);
-    parsedBody.name = [];
-    request.body = JSON.stringify(parsedBody);
+    const body = makeValidBody();
+    body.name = [];
+    const request = makeSubscribeRequest(body);
 
     const response = await lambda.handler(request);
 
@@ -176,8 +219,7 @@ describe("subscribe-lambda", function () {
   });
 
   it("multiple errors should be joined", async function () {
-    const request = makeValidSubscribe();
-    request.body = "{}";
+    const request = makeSubscribeRequest({});
 
     const response = await lambda.handler(request);
 
@@ -195,12 +237,16 @@ describe("subscribe-lambda", function () {
   });
 });
 
-function makeValidSubscribe() {
+function makeValidBody() {
+  return { name: randomString(), email: `${randomString()}@example.com` };
+}
+
+function makeSubscribeRequest(body) {
   return {
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify({ name: "abc", email: "def@ghi" }),
+    body: JSON.stringify(body),
   };
 }
 

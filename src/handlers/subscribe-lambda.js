@@ -4,10 +4,13 @@ module.exports = {
   handler,
 };
 
+const { putSubscription } = require("../aws/dynamo-db.js");
+const { trimmedEmail, trimmedString } = require("../util/validation.js");
+
 const POST_SUBSCRIBE_SCHEMA = yup
   .object({
-    email: yup.string().required().email(),
-    name: yup.string().required(),
+    email: trimmedEmail.required(),
+    name: trimmedString.required(),
   })
   .noUnknown();
 
@@ -17,11 +20,11 @@ async function handler(request) {
 
     const { body } = request;
 
-    const { name, email } = await validate(body);
+    const item = await validate(body);
 
-    return makeJsonResponse({
-      message: `Hello ${name}, thank you for submitting your email ${email}.`,
-    });
+    const updatedItem = await putSubscription(item);
+
+    return makeJsonResponse(updatedItem);
   } catch (error) {
     const { statusCode } = error;
     if (statusCode >= 400 && statusCode < 500) return makeErrorResponse(error);
@@ -68,7 +71,7 @@ function makeJsonResponse(body, { statusCode = 200, headers } = {}) {
 }
 
 function makeErrorResponse(error) {
-  let { statusCode, message } = error;
+  const { statusCode, message } = error;
 
   return makeJsonResponse({ message }, { statusCode });
 }
