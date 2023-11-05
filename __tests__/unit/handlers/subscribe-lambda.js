@@ -1,7 +1,6 @@
 const { getSubscription } = require("../../../src/aws/dynamo-db.js");
 const lambda = require("../../../src/handlers/subscribe-lambda.js");
-
-const randomString = require("../../util/randomString.js");
+const randomString = require("../../../src/util/randomString.js");
 
 describe("subscribe-lambda", function () {
   it("confirm successful request", async function () {
