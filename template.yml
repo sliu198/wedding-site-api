@@ -24,6 +24,10 @@ Globals:
 Parameters:
   AppId:
     Type: String
+  ApiDomainName:
+    Type: String
+  CertificateArn:
+    Type: String
 
 # Resources declares the AWS resources that you want to include in the stack
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
@@ -33,6 +37,11 @@ Resources:
 
   api:
     Type: AWS::Serverless::HttpApi
+    Properties:
+      Domain:
+        CertificateArn: !Ref CertificateArn
+        DomainName: !Ref ApiDomainName
+      DisableExecuteApiEndpoint: true
     Connectors:
       subscribeConnector:
         Properties:
