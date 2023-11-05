@@ -41,6 +41,8 @@ Resources:
       Domain:
         CertificateArn: !Ref CertificateArn
         DomainName: !Ref ApiDomainName
+        Route53:
+          HostedZoneName: !Sub '${ApiDomainName}.'
       DisableExecuteApiEndpoint: true
     Connectors:
       subscribeConnector:
