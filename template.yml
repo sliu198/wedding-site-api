@@ -38,11 +38,11 @@ Resources:
   api:
     Type: AWS::Serverless::HttpApi
     Properties:
-#      Domain:
-#        CertificateArn: !Ref CertificateArn
-#        DomainName: !Sub 'api.${DomainName}'
-#        Route53:
-#          HostedZoneName: !Sub '${DomainName}.'
+      Domain:
+        CertificateArn: !Ref CertificateArn
+        DomainName: !Sub 'api.${DomainName}'
+        Route53:
+          HostedZoneName: !Sub '${DomainName}.'
       DisableExecuteApiEndpoint: true
     Connectors:
       subscribeConnector:
