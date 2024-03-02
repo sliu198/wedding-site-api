@@ -97,3 +97,11 @@ Resources:
         Type: String
       SSESpecification:
         SSEEnabled: true
+  partiesTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: Number
+      SSESpecification:
+        SSEEnabled: true

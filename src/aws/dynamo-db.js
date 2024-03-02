@@ -21,6 +21,10 @@ if (IS_TEST) {
     endpoint: "http://localhost:8000",
     tls: false,
     region: "local-env",
+    credentials: {
+      accessKeyId: "fakeid",
+      secretAccessKey: "fakesecret",
+    },
   });
 }
 
