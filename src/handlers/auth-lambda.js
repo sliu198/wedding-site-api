@@ -38,7 +38,7 @@ async function handler(request) {
 
     const { id, password } = parseAuthString(authToken);
 
-    const hash = getPartyHash(id);
+    const hash = await getPartyHash(id);
 
     if (await authenticate(password, hash)) {
       const jwt = signJwt({}, config.JWT_SECRET, {
