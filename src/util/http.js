@@ -23,7 +23,7 @@ function validateAuthCookie(request) {
     .map((cookieString) => {
       return Cookie.parse(cookieString);
     })
-    .findLast((cookie) => cookie.key === "accessToken")?.value;
+    .findLast((cookie) => cookie?.key === "accessToken")?.value;
 
   if (!accessTokenValue) throw makeUnauthorizedError();
 
