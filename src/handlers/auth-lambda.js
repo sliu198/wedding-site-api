@@ -20,7 +20,7 @@ module.exports = {
 
 const POST_AUTH_SCHEMA = yup
   .object({
-    authToken: yup.string.required(),
+    authToken: yup.string().required(),
   })
   .noUnknown();
 
