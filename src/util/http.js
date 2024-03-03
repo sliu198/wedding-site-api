@@ -14,9 +14,9 @@ module.exports = {
 
 function validateAuthCookie(request) {
   const {
-    cookie = "",
+    headers: { cookie = "" },
     requestContext: { domainName },
-  } = request.headers;
+  } = request;
   if (!cookie) throw makeUnauthorizedError();
 
   const accessTokenValue = cookie
