@@ -7,12 +7,13 @@ const {
 
 const {
   IS_TEST,
-  DYNAMO_DB_TABLES: { SUBSCRIPTIONS },
+  DYNAMO_DB_TABLES: { SUBSCRIPTIONS, PARTIES },
 } = require("../config.js")();
 
 module.exports = {
   putSubscription,
   getSubscription,
+  getPartyHash,
 };
 
 const config = {};
@@ -68,6 +69,17 @@ async function getSubscription(email) {
       name: Item.name,
     }
   );
+}
+
+async function getPartyHash(id) {
+  const { Item } = await CLIENT.send(
+    new GetCommand({
+      TableName: PARTIES,
+      Key: { id },
+    }),
+  );
+
+  return Item?.hash || "";
 }
 
 function canonicalizeEmail(email) {
