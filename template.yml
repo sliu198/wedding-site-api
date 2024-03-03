@@ -146,7 +146,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: api
-            Method: POST
+            Method: GET
             Path: /parties/me
     Connectors:
       partiesTableConnector:
