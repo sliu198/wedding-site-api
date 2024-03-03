@@ -12,7 +12,7 @@ const {
 const parseAuthString = require("../util/parseAuthString");
 const authenticate = require("../util/authenticate");
 const { getPartyHash } = require("../aws/dynamo-db");
-const config = require("config");
+const config = require("../config");
 
 module.exports = {
   handler,
