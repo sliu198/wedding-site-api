@@ -10,6 +10,7 @@ module.exports = {
 
 async function handler(request) {
   try {
+    console.log(JSON.stringify(request, null, 2));
     const { sub } = validateAuthCookie(request);
 
     return makeJsonResponse({ id: Number.parseInt(sub) });
