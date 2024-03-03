@@ -33,7 +33,7 @@ function validateAuthCookie(request) {
       audience: domainName,
       issuer: domainName,
     });
-  } catch {
+  } catch (error) {
     throw makeUnauthorizedError();
   }
 }

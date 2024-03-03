@@ -17,6 +17,6 @@ module.exports = function ({ isTest } = {}) {
       SUBSCRIPTIONS: IS_TEST ? "Subscriptions" : SUBSCRIPTIONS_TABLE_NAME,
       PARTIES: IS_TEST ? "Parties" : PARTIES_TABLE_NAME,
     },
-    JWT_SECRET: IS_TEST ? randomString() : JWT_SECRET,
+    JWT_SECRET: IS_TEST ? "JWT_SECRET" : JWT_SECRET,
   };
 };
