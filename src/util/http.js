@@ -1,10 +1,42 @@
+const { Cookie } = require("tough-cookie");
+const { verify } = require("jsonwebtoken");
+
+const { JWT_SECRET } = require("../config")();
+
 module.exports = {
   parseJson,
   makeJsonResponse,
   makeErrorResponse,
   makeInputValidationFunction,
   makeUnauthorizedError,
+  validateAuthCookie,
 };
+
+function validateAuthCookie(request) {
+  const {
+    cookie = "",
+    requestContext: { domainName },
+  } = request.headers;
+  if (!cookie) throw makeUnauthorizedError();
+
+  const accessTokenValue = cookie
+    .split("; ")
+    .map((cookieString) => {
+      return Cookie.parse(cookieString);
+    })
+    .findLast((cookie) => cookie.key === "accessToken")?.value;
+
+  if (!accessTokenValue) throw makeUnauthorizedError();
+
+  try {
+    return verify(accessTokenValue, JWT_SECRET, {
+      audience: domainName,
+      issuer: domainName,
+    });
+  } catch {
+    throw makeUnauthorizedError();
+  }
+}
 
 function parseJson(request) {
   const { headers: { "content-type": contentType } = {} } = request;

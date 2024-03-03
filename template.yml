@@ -75,6 +75,14 @@ Resources:
             Id: authFunction
           Permissions:
             - Write
+      getSelfFunctionConnector:
+        Properties:
+          SourceReference:
+            Qualifier: $default/GET/parties/me
+          Destination:
+            Id: getSelfFunction
+          Permissions:
+            - Write
   subscribeFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -116,6 +124,30 @@ Resources:
             ApiId: api
             Method: POST
             Path: /auth
+    Connectors:
+      partiesTableConnector:
+        Properties:
+          Destination:
+            Id: partiesTable
+          Permissions:
+            - Read
+  getSelfFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: src/handlers/get-self-lambda.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          PARTIES_TABLE_NAME: !Ref partiesTable
+          JWT_SECRET: !Ref JwtSecret
+      Events:
+        httpApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: api
+            Method: POST
+            Path: /parties/me
     Connectors:
       partiesTableConnector:
         Properties:
