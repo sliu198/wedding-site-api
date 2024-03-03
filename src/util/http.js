@@ -14,13 +14,12 @@ module.exports = {
 
 function validateAuthCookie(request) {
   const {
-    headers: { cookie = "" },
+    cookies,
     requestContext: { domainName },
   } = request;
-  if (!cookie) throw makeUnauthorizedError();
+  if (!cookies?.length) throw makeUnauthorizedError();
 
-  const accessTokenValue = cookie
-    .split("; ")
+  const accessTokenValue = cookies
     .map((cookieString) => {
       return Cookie.parse(cookieString);
     })

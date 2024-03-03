@@ -16,9 +16,7 @@ describe("get-self-lambda", function () {
     });
 
     const actual = await lambda.handler({
-      headers: {
-        cookie: `accessToken=${jwt}`,
-      },
+      cookies: [`accessToken=${jwt}`],
       requestContext: {
         domainName: DOMAIN,
       },
