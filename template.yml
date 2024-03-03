@@ -117,7 +117,7 @@ Resources:
             Method: POST
             Path: /auth
     Connectors:
-      subscriptionsTableConnector:
+      partiesTableConnector:
         Properties:
           Destination:
             Id: partiesTable

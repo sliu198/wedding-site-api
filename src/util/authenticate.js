@@ -8,8 +8,8 @@ const BACKUP_SALT = "vfdshDvbTFQ";
 const BACKUP_DIGEST = "cYZoEA6gx3Ci8JdwmpgTdqOTCkMcECoUJsBp9hJE2_A";
 
 const SCRYPT_PARAMS = {
-  cost: 1 << 14,
-  parallelization: 5,
+  // cost: 1 << 14,
+  // parallelization: 5,
 };
 
 module.exports = async function authenticate(password, hash) {
