@@ -35,6 +35,7 @@ module.exports = {
   getSubscription,
   getPartyHash,
   getParty,
+  putParty,
 };
 
 async function get(table, key) {
@@ -100,19 +101,21 @@ async function getPartyHash(id) {
   return Item?.hash || "";
 }
 
+const PARTY_PROPS = [
+  "id",
+  "guests",
+  "maxGuests",
+  "shuttleOptions",
+  "otherAccommodations",
+];
+
 async function getParty(id) {
   const { Item } = await get(PARTIES, { id });
 
   if (!Item) return Item;
 
   const party = _.chain(Item)
-    .pick([
-      "id",
-      "guests",
-      "maxGuests",
-      "shuttleOptions",
-      "otherAccommodations",
-    ])
+    .pick(PARTY_PROPS)
     .defaultsDeep({
       guests: [],
       maxGuests: Item.guests?.length || 0,
@@ -133,6 +136,19 @@ async function getParty(id) {
   });
 
   return party;
+}
+
+async function putParty(item) {
+  item = _.pick(item, PARTY_PROPS);
+
+  const { Item } = await get(PARTIES, { id: item.id });
+  if (Item) {
+    Object.assign(item, _.omit(Item, PARTY_PROPS));
+  }
+
+  await put(PARTIES, item);
+
+  return item;
 }
 
 function canonicalizeEmail(email) {

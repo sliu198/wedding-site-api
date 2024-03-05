@@ -1,7 +1,7 @@
 const { randomInt } = require("crypto");
 const { sign: signJwt } = require("jsonwebtoken");
 
-const { put, del } = require("../../../src/aws/dynamo-db");
+const { putParty, del } = require("../../../src/aws/dynamo-db");
 const lambda = require("../../../src/handlers/get-self-lambda");
 const { JWT_SECRET, DYNAMO_DB_TABLES } = require("../../../src/config")();
 
@@ -11,7 +11,7 @@ describe("get-self-lambda", function () {
 
   beforeEach(async function () {
     id = randomInt(1, 1 << 10);
-    await put(DYNAMO_DB_TABLES.PARTIES, { id });
+    await putParty({ id });
   });
 
   afterEach(async function () {
