@@ -3,18 +3,14 @@ const {
   DynamoDBDocumentClient,
   PutCommand,
   GetCommand,
+  DeleteCommand,
 } = require("@aws-sdk/lib-dynamodb");
+const _ = require("lodash");
 
 const {
   IS_TEST,
   DYNAMO_DB_TABLES: { SUBSCRIPTIONS, PARTIES },
 } = require("../config.js")();
-
-module.exports = {
-  putSubscription,
-  getSubscription,
-  getPartyHash,
-};
 
 const config = {};
 if (IS_TEST) {
@@ -31,6 +27,43 @@ if (IS_TEST) {
 
 const CLIENT = DynamoDBDocumentClient.from(new DynamoDBClient(config));
 
+module.exports = {
+  get,
+  put,
+  del,
+  putSubscription,
+  getSubscription,
+  getPartyHash,
+  getParty,
+};
+
+async function get(table, key) {
+  return await CLIENT.send(
+    new GetCommand({
+      TableName: table,
+      Key: key,
+    }),
+  );
+}
+
+async function put(table, item) {
+  return await CLIENT.send(
+    new PutCommand({
+      TableName: table,
+      Item: item,
+    }),
+  );
+}
+
+async function del(table, key) {
+  return await CLIENT.send(
+    new DeleteCommand({
+      TableName: table,
+      Key: key,
+    }),
+  );
+}
+
 async function putSubscription({ email, name }) {
   const { key, canonical: canonicalEmail } = canonicalizeEmail(email);
   name = canonicalizeName(name);
@@ -39,12 +72,7 @@ async function putSubscription({ email, name }) {
   const oldItem = await getSubscription(email);
 
   if (!oldItem || oldItem.email !== canonicalEmail || oldItem.name !== name) {
-    await CLIENT.send(
-      new PutCommand({
-        TableName: SUBSCRIPTIONS,
-        Item: { email, canonicalEmail, name },
-      }),
-    );
+    await put(SUBSCRIPTIONS, { email, canonicalEmail, name });
   }
 
   return {
@@ -56,12 +84,7 @@ async function putSubscription({ email, name }) {
 async function getSubscription(email) {
   const { key } = canonicalizeEmail(email);
 
-  const { Item } = await CLIENT.send(
-    new GetCommand({
-      TableName: SUBSCRIPTIONS,
-      Key: { email: key },
-    }),
-  );
+  const { Item } = await get(SUBSCRIPTIONS, { email: key });
 
   return (
     Item && {
@@ -72,14 +95,44 @@ async function getSubscription(email) {
 }
 
 async function getPartyHash(id) {
-  const { Item } = await CLIENT.send(
-    new GetCommand({
-      TableName: PARTIES,
-      Key: { id },
-    }),
-  );
+  const { Item } = await get(PARTIES, { id });
 
   return Item?.hash || "";
+}
+
+async function getParty(id) {
+  const { Item } = await get(PARTIES, { id });
+
+  if (!Item) return Item;
+
+  const party = _.chain(Item)
+    .pick([
+      "id",
+      "guests",
+      "maxGuests",
+      "shuttleOptions",
+      "otherAccommodations",
+    ])
+    .defaultsDeep({
+      guests: [],
+      maxGuests: Item.guests?.length || 0,
+      shuttleOptions: {
+        pickUpLocation: "",
+        dropOffLocation: "",
+      },
+      otherAccommodations: "",
+    })
+    .value();
+
+  party.guests.forEach((guest) => {
+    return _.defaultsDeep(guest, {
+      name: "",
+      isAttending: null,
+      dietaryRestrictions: "",
+    });
+  });
+
+  return party;
 }
 
 function canonicalizeEmail(email) {

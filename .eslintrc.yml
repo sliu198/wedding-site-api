@@ -5,6 +5,7 @@ env:
 extends:
   - standard
   - prettier
+  - plugin:jest/recommended
 parserOptions:
   ecmaVersion: latest
 rules: {}

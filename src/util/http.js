@@ -9,6 +9,7 @@ module.exports = {
   makeErrorResponse,
   makeInputValidationFunction,
   makeUnauthorizedError,
+  makeNotFoundError,
   validateAuthCookie,
 };
 
@@ -80,6 +81,10 @@ function makeBadRequestError(message = "Bad Request") {
 
 function makeUnauthorizedError(message = "Unauthorized") {
   return makeError(message, 401);
+}
+
+function makeNotFoundError(message = "Not Found") {
+  return makeError(message, 404);
 }
 
 function makeUnsupportedMediaTypeError() {
