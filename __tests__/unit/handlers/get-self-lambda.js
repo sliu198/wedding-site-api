@@ -18,7 +18,7 @@ describe("get-self-lambda", function () {
     await del(DYNAMO_DB_TABLES.PARTIES, { id });
   });
 
-  it("should return success if request is made with valid auth", async function () {
+  it("should return default values for missing", async function () {
     const jwt = signJwt({}, JWT_SECRET, {
       subject: String(id),
       issuer: DOMAIN,

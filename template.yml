@@ -83,6 +83,14 @@ Resources:
             Id: getSelfFunction
           Permissions:
             - Write
+      putPartyFunctionConnector:
+        Properties:
+          SourceReference:
+            Qualifier: $default/PUT/parties/{id}
+          Destination:
+            Id: putPartyFunction
+          Permissions:
+            - Write
   subscribeFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -155,6 +163,31 @@ Resources:
             Id: partiesTable
           Permissions:
             - Read
+  putPartyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./
+      Handler: src/handlers/put-party-lambda.handler
+      Runtime: nodejs18.x
+      Environment:
+        Variables:
+          PARTIES_TABLE_NAME: !Ref partiesTable
+          JWT_SECRET: !Ref JwtSecret
+      Events:
+        httpApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: api
+            Method: PUT
+            Path: /parties/{id}
+    Connectors:
+      partiesTableConnector:
+        Properties:
+          Destination:
+            Id: partiesTable
+          Permissions:
+            - Read
+            - Write
   subscriptionsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:

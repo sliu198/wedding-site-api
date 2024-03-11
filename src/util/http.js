@@ -9,6 +9,7 @@ module.exports = {
   makeErrorResponse,
   makeInputValidationFunction,
   makeUnauthorizedError,
+  makeForbiddenError,
   makeNotFoundError,
   validateAuthCookie,
 };
@@ -81,6 +82,10 @@ function makeBadRequestError(message = "Bad Request") {
 
 function makeUnauthorizedError(message = "Unauthorized") {
   return makeError(message, 401);
+}
+
+function makeForbiddenError(message = "Forbidden") {
+  return makeError(message, 403);
 }
 
 function makeNotFoundError(message = "Not Found") {
