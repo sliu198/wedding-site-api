@@ -54,6 +54,7 @@ async function handler(request) {
         secure: true,
         httpOnly: true,
         sameSite: "none",
+        path: "/",
       });
 
       return makeJsonResponse(
