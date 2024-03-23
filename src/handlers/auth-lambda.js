@@ -48,20 +48,20 @@ async function handler(request) {
         expiresIn: "1y",
       });
 
-      const cookie = new Cookie({
+      const cookieString = new Cookie({
         key: "accessToken",
         value: jwt,
         secure: true,
         httpOnly: true,
-        sameSite: "none",
+        sameSite: "None",
         path: "/",
-      });
+      }).toString();
 
       return makeJsonResponse(
         {},
         {
           headers: {
-            "Set-Cookie": cookie.toString(),
+            "Set-Cookie": cookieString,
           },
         },
       );
