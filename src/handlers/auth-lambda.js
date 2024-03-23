@@ -53,7 +53,7 @@ async function handler(request) {
         value: jwt,
         secure: true,
         httpOnly: true,
-        sameSite: "strict",
+        sameSite: "none",
       });
 
       return makeJsonResponse(
